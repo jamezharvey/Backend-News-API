@@ -31,8 +31,6 @@ describe("GET /api/topics", () => {
         expect(res.body.topics).toEqual(expected);
       });
   });
-<<<<<<< HEAD
-=======
   test("404: bad request", () => {
     return request(app)
       .get("/api/topicos") // spelled wrong, bad request
@@ -41,5 +39,39 @@ describe("GET /api/topics", () => {
         expect(body.msg).toBe("Route not found");
       });
   });
->>>>>>> get-request-one-plus-404
+});
+
+describe("GET /api/article/:id", () => {
+  test("200: responds with requested article", () => {
+    return request(app)
+      .get("/api/articles/3")
+      .expect(200)
+      .then((res) => {
+        expect(res.body).toMatchObject({
+          article_id: expect.any(Number),
+          title: expect.any(String),
+          topic: expect.any(String),
+          author: expect.any(String),
+          body: expect.any(String),
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+        });
+      });
+  });
+  test("400: non int id responds with bad request", () => {
+    return request(app)
+      .get("/api/articles/badId")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+  test("404: responds with bad request", () => {
+    return request(app)
+      .get("/api/articles/10000")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("article not found");
+      });
+  });
 });
