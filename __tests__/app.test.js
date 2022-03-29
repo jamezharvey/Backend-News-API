@@ -31,4 +31,15 @@ describe("GET /api/topics", () => {
         expect(res.body.topics).toEqual(expected);
       });
   });
+<<<<<<< HEAD
+=======
+  test("404: bad request", () => {
+    return request(app)
+      .get("/api/topicos") // spelled wrong, bad request
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Route not found");
+      });
+  });
+>>>>>>> get-request-one-plus-404
 });
