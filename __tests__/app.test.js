@@ -75,3 +75,77 @@ describe("GET /api/article/:id", () => {
       });
   });
 });
+
+describe("PATCH /api/articles/:article_id", () => {
+  test("200: responds with updated article and votecount", () => {
+    return request(app)
+      .patch("/api/articles/3")
+      .send({
+        inc_votes: 5,
+      })
+      .expect(200)
+      .then((res) => {
+        const expected = {
+          article_id: 3,
+          title: "Eight pug gifs that remind me of mitch",
+          topic: "mitch",
+          author: "icellusedkars",
+          body: "some gifs",
+          created_at: "2020-11-03T09:12:00.000Z",
+          votes: 5,
+        };
+        expect(res.body).toEqual(expected);
+      });
+  });
+  test("400: non int id responds with bad request", () => {
+    return request(app)
+      .patch("/api/articles/badId")
+      .send({ inc_votes: 5 })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+  test("404: responds with article not found when given wrong article id", () => {
+    return request(app)
+      .patch("/api/articles/10000")
+      .send({
+        inc_votes: 5,
+      })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("article not found");
+      });
+  });
+  test("400: body missing completely", () => {
+    return request(app)
+      .patch("/api/articles/6")
+      .send({})
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("body missing / wrong key");
+      });
+  });
+  test("400: incorrect key", () => {
+    return request(app)
+      .patch("/api/articles/6")
+      .send({
+        votes: 5,
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("body missing / wrong key");
+      });
+  });
+  test("400: incorrect data type", () => {
+    return request(app)
+      .patch("/api/articles/6")
+      .send({
+        inc_votes: "arnold",
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("votes should be a number");
+      });
+  });
+});
