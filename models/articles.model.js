@@ -16,7 +16,6 @@ exports.updateArticleById = (article_id, inc_votes) => {
   return db
     .query(`SELECT votes FROM articles WHERE article_id = $1`, [article_id])
     .then((result) => {
-      console.log(inc_votes);
       if (result.rows.length === 0) {
         return Promise.reject({ msg: "article not found", status: 404 });
       } else if (!inc_votes) {
