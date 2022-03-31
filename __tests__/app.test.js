@@ -55,6 +55,7 @@ describe("GET /api/article/:id", () => {
           body: expect.any(String),
           created_at: expect.any(String),
           votes: expect.any(Number),
+          comment_count: expect.any(Number),
         });
       });
   });
