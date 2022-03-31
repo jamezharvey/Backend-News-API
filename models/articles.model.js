@@ -8,7 +8,6 @@ exports.selectAllArticles = () => {
       GROUP BY articles.article_id;`
     )
     .then((result) => {
-      //console.log(result.rows);
       return result.rows;
     });
 };
