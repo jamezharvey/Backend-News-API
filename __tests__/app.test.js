@@ -7,6 +7,7 @@ const app = require("../app");
 afterAll(() => db.end());
 beforeEach(() => seed(testData));
 
+// topic api endpoint tests
 describe("GET /api/topics", () => {
   test("200: responds with all topics", () => {
     const expected = [
@@ -41,7 +42,40 @@ describe("GET /api/topics", () => {
   });
 });
 
-describe("GET /api/article/:id", () => {
+// article api endpoint tests
+
+describe("GET /api/articles", () => {
+  test("200: responds with requested article", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((res) => {
+        expect(res.body.articles).toBeInstanceOf(Array);
+        res.body.articles.forEach((article) => {
+          expect(article).toMatchObject({
+            article_id: expect.any(Number),
+            title: expect.any(String),
+            topic: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            comment_count: expect.any(Number),
+          });
+        });
+      });
+  });
+  test("404: bad request", () => {
+    return request(app)
+      .get("/api/articlez") // spelled wrong, bad request
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Route not found");
+      });
+  });
+});
+
+describe("GET /api/articles/:id", () => {
   test("200: responds with requested article", () => {
     return request(app)
       .get("/api/articles/3")
@@ -151,6 +185,7 @@ describe("PATCH /api/articles/:article_id", () => {
   });
 });
 
+// user api endpoint tests
 describe("GET /api/users", () => {
   test("200: returns correct userdata", () => {
     return request(app)
