@@ -1,6 +1,5 @@
-const res = require("express/lib/response");
 const db = require("../db/connection");
-const { checkExists } = require("../utils/utils");
+const { checkArticleExists } = require("../utils/utils");
 
 exports.selectAllArticles = () => {
   return db
@@ -34,13 +33,11 @@ exports.selectArticleId = (article_id) => {
 
 exports.selectCommentsByArticle = (article_id) => {
   return db
-    .query(`SELECT * FROM comments WHERE comments.article_id = $1;`, [
-      article_id,
-    ])
+    .query(`SELECT * FROM comments WHERE article_id = $1;`, [article_id])
     .then((comments) => {
-      const exists = checkExists(article_id).then((result) => {
+      const exists = checkArticleExists(article_id).then((result) => {
         if (result === true && comments.rows.length === 0) {
-          return Promise.reject({ msg: "no comments found", status: 200 });
+          return Promise.reject({ msg: "no content", status: 200 });
         } else if (result === false) {
           return Promise.reject({ msg: "article not found", status: 404 });
         } else {

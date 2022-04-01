@@ -3,9 +3,26 @@ const seed = require("../db/seeds/seed");
 const testData = require("../db/data/test-data/index");
 const request = require("supertest");
 const app = require("../app");
+const { checkArticleExists } = require("../utils/utils");
 
 afterAll(() => db.end());
 beforeEach(() => seed(testData));
+
+// util testing
+describe("checkArticleExists", () => {
+  test("returns false when there is no article", () => {
+    const article_id = 500;
+    const exists = checkArticleExists(article_id).then((result) => {
+      expect(result).toBe(false);
+    });
+  });
+  test("returns true when there is an article", () => {
+    const article_id = 5;
+    const exists = checkArticleExists(article_id).then((result) => {
+      expect(result).toBe(true);
+    });
+  });
+});
 
 // topic api endpoint tests
 describe("GET /api/topics", () => {
@@ -129,29 +146,12 @@ describe("GET /api/articles/:article_id/comments", () => {
         });
       });
   });
-  test("200: returns all comments when article only has one comment", () => {
-    return request(app)
-      .get("/api/articles/6/comments")
-      .expect(200)
-      .then((res) => {
-        expect(res.body.comments).toBeInstanceOf(Array);
-        res.body.comments.forEach((comment) => {
-          expect(comment).toMatchObject({
-            body: expect.any(String),
-            votes: expect.any(Number),
-            author: expect.any(String),
-            article_id: expect.any(Number),
-            created_at: expect.any(String),
-          });
-        });
-      });
-  });
-  test("200: this article has no comments", () => {
+  test("204: this article has no comments", () => {
     return request(app)
       .get("/api/articles/4/comments")
       .expect(200)
       .then(({ body }) => {
-        expect(body.msg).toEqual("no comments found");
+        expect(body.msg).toEqual("no content");
       });
   });
   test("404: this article is not found", () => {
