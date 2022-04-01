@@ -111,6 +111,59 @@ describe("GET /api/articles/:id", () => {
   });
 });
 
+describe("GET /api/articles/:article_id/comments", () => {
+  test("200: returns all comments related to article id", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then((res) => {
+        expect(res.body.comments).toBeInstanceOf(Array);
+        res.body.comments.forEach((comment) => {
+          expect(comment).toMatchObject({
+            body: expect.any(String),
+            votes: expect.any(Number),
+            author: expect.any(String),
+            article_id: expect.any(Number),
+            created_at: expect.any(String),
+          });
+        });
+      });
+  });
+  test("200: returns all comments when article only has one comment", () => {
+    return request(app)
+      .get("/api/articles/6/comments")
+      .expect(200)
+      .then((res) => {
+        expect(res.body.comments).toBeInstanceOf(Array);
+        res.body.comments.forEach((comment) => {
+          expect(comment).toMatchObject({
+            body: expect.any(String),
+            votes: expect.any(Number),
+            author: expect.any(String),
+            article_id: expect.any(Number),
+            created_at: expect.any(String),
+          });
+        });
+      });
+  });
+  test("200: this article has no comments", () => {
+    return request(app)
+      .get("/api/articles/4/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("no comments found");
+      });
+  });
+  test("404: this article is not found", () => {
+    return request(app)
+      .get("/api/articles/4000/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("article not found");
+      });
+  });
+});
+
 describe("PATCH /api/articles/:article_id", () => {
   test("200: responds with updated article and votecount", () => {
     return request(app)
