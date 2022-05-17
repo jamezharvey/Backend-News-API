@@ -67,8 +67,8 @@ describe("GET /api/articles", () => {
       .get("/api/articles")
       .expect(200)
       .then((res) => {
-        expect(res.body.articles).toBeInstanceOf(Array);
-        res.body.articles.forEach((article) => {
+        expect(res.body).toBeInstanceOf(Array);
+        res.body.forEach((article) => {
           expect(article).toMatchObject({
             article_id: expect.any(Number),
             title: expect.any(String),
@@ -238,7 +238,7 @@ describe("PATCH /api/articles/:article_id", () => {
   });
 });
 
-describe.only("POST /api/articles/:article_id/comments", () => {
+describe("POST /api/articles/:article_id/comments", () => {
   test("201: returns added comment", () => {
     return request(app)
       .post("/api/articles/9/comments")
@@ -267,6 +267,35 @@ describe.only("POST /api/articles/:article_id/comments", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("bad request");
+      });
+  });
+});
+
+describe("DELETE /api/comments/:comment_id", () => {
+  test("204: delete the comment with matching comment_id", () => {
+    return request(app)
+      .delete("/api/comments/1")
+      .expect(204)
+      .then(({ body }) => {
+        expect(body).toEqual({});
+      });
+  });
+  test("400: comment_id invalid", () => {
+    return request(app)
+      .delete("/api/comments/five")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("bad request");
+      });
+  });
+  test("404: comment_id does not exist", () => {
+    return request(app)
+      .delete("/api/comments/1000")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toEqual(
+          "No comments for specified comment id, check comment id exists"
+        );
       });
   });
 });

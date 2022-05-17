@@ -5,11 +5,14 @@ const {
 } = require("../models/articles.model");
 
 exports.getArticles = (req, res, next) => {
-  selectAllArticles()
+  const { sort_by, order, topic } = req.query;
+  selectAllArticles(sort_by, order, topic)
     .then((articles) => {
-      res.status(200).send({ articles });
+      res.status(200).send(articles);
     })
-    .catch(next);
+    .catch((err) => {
+      next(err);
+    });
 };
 
 exports.getArticleId = (req, res, next) => {
