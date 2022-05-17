@@ -1,5 +1,4 @@
 const db = require("../db/connection");
-const { checkArticleExists } = require("../utils/utils");
 
 exports.selectAllArticles = () => {
   return db
@@ -31,23 +30,6 @@ exports.selectArticleId = (article_id) => {
     });
 };
 
-exports.selectCommentsByArticle = (article_id) => {
-  return db
-    .query(`SELECT * FROM comments WHERE article_id = $1;`, [article_id])
-    .then((comments) => {
-      const exists = checkArticleExists(article_id).then((result) => {
-        if (result === true && comments.rows.length === 0) {
-          return Promise.reject({ msg: "no content", status: 200 });
-        } else if (result === false) {
-          return Promise.reject({ msg: "article not found", status: 404 });
-        } else {
-          return comments.rows;
-        }
-      });
-      return exists;
-    });
-};
-
 exports.updateArticleById = (article_id, inc_votes) => {
   return db
     .query(`SELECT votes FROM articles WHERE article_id = $1`, [article_id])
@@ -69,5 +51,21 @@ exports.updateArticleById = (article_id, inc_votes) => {
             return result.rows[0];
           });
       }
+    });
+};
+
+exports.updateCommentByArticle = (article_id, username, body) => {
+  return db
+    .query(
+      `INSERT INTO comments (body, author, article_id)
+    VALUES ($1, $2, $3, 0)
+    RETURNING *;`,
+      [body, username, article_id]
+    )
+    .then((result) => {
+      return result.rows[0];
+    })
+    .catch((err) => {
+      console.log(err);
     });
 };

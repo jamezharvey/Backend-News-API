@@ -238,6 +238,39 @@ describe("PATCH /api/articles/:article_id", () => {
   });
 });
 
+describe.only("POST /api/articles/:article_id/comments", () => {
+  test("201: returns added comment", () => {
+    return request(app)
+      .post("/api/articles/9/comments")
+      .send({
+        username: "butter_bridge",
+        body: "I am a bee, this pleases me",
+      })
+      .expect(201)
+      .then((res) => {
+        expect(res.body).toMatchObject({
+          body: expect.any(String),
+          votes: expect.any(Number),
+          author: expect.any(String),
+          article_id: expect.any(Number),
+          created_at: expect.any(String),
+        });
+      });
+  });
+  test("400: non int id responds with bad request", () => {
+    return request(app)
+      .post("/api/articles/badId/comments")
+      .send({
+        username: "butter_bridge",
+        body: "I am a bee, this pleases me",
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+});
+
 // user api endpoint tests
 describe("GET /api/users", () => {
   test("200: returns correct userdata", () => {
@@ -253,6 +286,22 @@ describe("GET /api/users", () => {
             avatar_url: expect.any(String),
           });
         });
+      });
+  });
+  test("404: bad request", () => {
+    return request(app)
+      .get("/api/usors") // spelled wrong, bad request
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Route not found");
+      });
+  });
+  test("404: bad request", () => {
+    return request(app)
+      .get("/api/usors") // spelled wrong, bad request
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Route not found");
       });
   });
   test("404: bad request", () => {
