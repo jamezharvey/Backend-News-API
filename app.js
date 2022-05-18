@@ -6,7 +6,6 @@ const {
   getArticles,
 } = require("./controller/articles.controller");
 
-const { getAPI } = require("./controller/api.controller");
 const {
   getCommentsByArticleId,
   postArticleComment,
@@ -30,7 +29,6 @@ app.delete("/api/comments/:comment_id", deleteArticleCommentById);
 
 app.get("/api/users", getUsers);
 
-app.get("/api", getAPI);
 app.all("/*", (req, res) => {
   res.status(404).send({ msg: "Route not found" });
 });

@@ -4,14 +4,6 @@ const testData = require("../db/data/test-data/index");
 const request = require("supertest");
 const app = require("../app");
 const { checkArticleExists } = require("../utils/utils");
-const endpoints = require("../endpoints.json");
-
-// - 200 OK
-// - 201 Created
-// - 204 No Content
-// - 400 Bad Request
-// - 404 Not Found
-// - 500 Internal Server Error
 
 afterAll(() => db.end());
 beforeEach(() => seed(testData));
@@ -347,17 +339,6 @@ describe("GET /api/users", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("Route not found");
-      });
-  });
-});
-
-describe("GET /api", () => {
-  test("Status 200: returns a list of endpoints included in api", () => {
-    return request(app)
-      .get("/api")
-      .expect(200)
-      .then(({ body }) => {
-        expect(body).toEqual(endpoints);
       });
   });
 });
